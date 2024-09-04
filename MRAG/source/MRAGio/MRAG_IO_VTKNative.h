@@ -180,7 +180,7 @@ namespace MRAG
 		
 		vtkXMLUnstructuredGridWriter * writer = vtkXMLUnstructuredGridWriter::New();
 		writer->SetFileName(filename.c_str());
-		writer->SetInput(uGrid);
+		writer->SetInputData(uGrid);
 		writer->Write();
 		
 		points->Delete();

@@ -40,8 +40,8 @@ struct bbox
 	{
 		for (int i=0;i<sDim;++i)
 		{
-			lower[i]=BaseType(HUGE);
-			upper[i]=-BaseType(HUGE);
+			lower[i]=BaseType(HUGE_VAL);
+			upper[i]=-BaseType(HUGE_VAL);
 		}
 	}
 	

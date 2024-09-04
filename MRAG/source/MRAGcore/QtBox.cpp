@@ -597,7 +597,9 @@ void QtBox::_getChildBoxDimensions(const double parentMinVertex[2], double paren
 
 unsigned int QtBox::_invLevelToLevel(unsigned int _invLevel)
 {
-	return abs(_invLevel - ROOT_LEVEL);
+	const int il = static_cast<int>(_invLevel);
+	const int rl = static_cast<int>(ROOT_LEVEL); 
+	return static_cast<unsigned int>(abs(il - rl));
 }
 
 unsigned int QtBox::_getLocationalCode(double x)

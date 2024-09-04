@@ -122,15 +122,15 @@ namespace HCFMM{
 		//assign operator:
 		Box & operator=(const Box &B)
 		{
-			level(B.level);
-			isleaf(B.isleaf);
-			vparticles(B.vparticles);
-			parent(B.parent);
-			nParticles(B.nParticles);
-			expansions(B.expansions),
-			got_COM(B.got_COM);
-			got_expansions(B.got_expansions);
-			
+			level = B.level;
+			isleaf = B.isleaf;
+			vparticles = B.vparticles;
+			parent = B.parent;
+			nParticles = B.nParticles;
+			expansions = B.expansions;
+			got_COM = B.got_COM;
+			got_expansions = B.got_expansions;
+
 			for (int d=0;d<Particle::dim;++d)
 			{
 				h[d]=B.h[d];
