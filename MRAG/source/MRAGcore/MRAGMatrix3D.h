@@ -30,14 +30,14 @@ public:
 			if (!bPrimitiveType)
 			{
 				for(int i=0; i<m_nElements; i++)
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 					alloc.destroy(m_pData+i);
 #else
 					std::allocator_traits<allocator<DataType>>::destroy(alloc, m_pData+i);
 #endif
 			}
 			
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			alloc.deallocate(m_pData, m_nElements);
 #else		
 			std::allocator_traits<allocator<DataType>>::deallocate(alloc, m_pData, m_nElements);
@@ -59,7 +59,7 @@ public:
 		m_nElements = nSizeX*nSizeY*nSizeZ;
 		
 		allocator<DataType> alloc;
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 		m_pData = alloc.allocate(m_nElements);
 #else
 		using alloc_traits = std::allocator_traits<allocator<DataType>>;
@@ -71,7 +71,7 @@ public:
 		if (!bPrimitiveType)
 		{
 			for(int i=0; i<m_nElements; i++)
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 				alloc.construct(m_pData+i, DataType());
 #else
 				alloc_traits::construct(alloc, m_pData + i, DataType());

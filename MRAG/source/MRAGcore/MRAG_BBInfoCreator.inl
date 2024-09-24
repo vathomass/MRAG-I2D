@@ -264,7 +264,7 @@ namespace MRAG
 			
 			nBastards++;
 		
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
 #else
@@ -639,7 +639,7 @@ void MRAG_BBInfoCreator<WaveletsType, BlockType>::_computeEasyGhosts_Analysis(Bo
 			
 			nBastards++;
 
-#if TBB_OLD_VERSION	
+#ifdef TBB_OLD_VERSION	
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
 #else
@@ -1020,7 +1020,7 @@ BoundaryInfoBlock* MRAG_BBInfoCreator<WaveletsType, BlockType>::createBoundaryIn
 		for(i[1]=s[1]; i[1]<e[1]; i[1]++)
 		for(i[0]=s[0]; i[0]<e[0]; i[0]++)
 		{
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
 #else
@@ -1044,7 +1044,7 @@ BoundaryInfoBlock* MRAG_BBInfoCreator<WaveletsType, BlockType>::createBoundaryIn
 	
 	for(typename vector<BastardGhost *>::iterator it= bastards.begin(); it!= bastards.end(); it++)
 	{
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 		allocator<BastardGhost>().destroy(*it);
 		allocator<BastardGhost>().deallocate(*it,1);
 #else
@@ -1266,7 +1266,7 @@ void MRAG_BBInfoCreator<WaveletsType, BlockType>::_resolveBastardGhosts(
 	{
 		for(typename GhostMap::iterator itM = itV->begin(); itM!=itV->end(); itM++)
 		{
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			allocator<BastardGhost>().destroy(itM->second);
 			allocator<BastardGhost>().deallocate(itM->second,1);
 #else

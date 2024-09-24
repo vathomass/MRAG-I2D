@@ -57,7 +57,7 @@ protected:
 	{ 
 		if (t != NULL)
 		{
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			allocator<T>().destroy(t);
 			allocator<T>().deallocate(t,1);
 #else
@@ -75,7 +75,7 @@ protected:
 	{ 
 		if (t != NULL)
 		{
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			allocator<T>().deallocate(t, n); 
 #else
 			_MRAG_BLOCKLAB_ALLOCATOR<T> alloc = allocator<T>();
@@ -148,7 +148,7 @@ public:
 			if (m_cacheBlock != NULL)
 				_release(m_cacheBlock);
 
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 			m_cacheBlock = allocator< Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> >().allocate(1);
 			
 			allocator< Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> >().construct(m_cacheBlock, Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> ());

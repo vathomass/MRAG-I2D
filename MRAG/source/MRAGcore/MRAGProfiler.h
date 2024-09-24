@@ -24,7 +24,7 @@ using namespace std;
 #include "MRAGEnvironment.h"
 #ifdef _MRAG_TBB
 #include "tbb/tick_count.h"
-#if TBB_OLD_VERSION
+#ifdef TBB_OLD_VERSION
 namespace tbb { class tick_count; }
 #endif
 #else
