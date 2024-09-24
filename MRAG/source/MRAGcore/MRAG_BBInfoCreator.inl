@@ -264,8 +264,15 @@ namespace MRAG
 			
 			nBastards++;
 		
+#if TBB_OLD_VERSION
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
+#else
+			_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+			using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+			BastardGhost * bastard = alloc_traits::allocate(alloc, 1);
+			alloc_traits::construct(alloc, bastard, BastardGhost(b.level, i));
+#endif
 			
 			bastards.push_back(bastard);
 		}
@@ -631,9 +638,16 @@ void MRAG_BBInfoCreator<WaveletsType, BlockType>::_computeEasyGhosts_Analysis(Bo
 			if (i[0]>= e[0]) continue;
 			
 			nBastards++;
-			
+
+#if TBB_OLD_VERSION	
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
+#else
+			_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+			using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+			BastardGhost * bastard = alloc_traits::allocate(alloc, 1);
+			alloc_traits::construct(alloc, bastard, BastardGhost(b.level, i));
+#endif
 		
 			bastards.push_back(bastard);
 		}
@@ -1006,8 +1020,15 @@ BoundaryInfoBlock* MRAG_BBInfoCreator<WaveletsType, BlockType>::createBoundaryIn
 		for(i[1]=s[1]; i[1]<e[1]; i[1]++)
 		for(i[0]=s[0]; i[0]<e[0]; i[0]++)
 		{
+#if TBB_OLD_VERSION
 			BastardGhost * bastard = allocator<BastardGhost>().allocate(1);
 			allocator<BastardGhost>().construct(bastard, BastardGhost( b.level, i));
+#else
+			_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+			using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+			BastardGhost * bastard = alloc_traits::allocate(alloc, 1);
+			alloc_traits::construct(alloc, bastard, BastardGhost(b.level, i));
+#endif
 			bastards.push_back(bastard);
 		}
 	}
@@ -1023,8 +1044,15 @@ BoundaryInfoBlock* MRAG_BBInfoCreator<WaveletsType, BlockType>::createBoundaryIn
 	
 	for(typename vector<BastardGhost *>::iterator it= bastards.begin(); it!= bastards.end(); it++)
 	{
+#if TBB_OLD_VERSION
 		allocator<BastardGhost>().destroy(*it);
 		allocator<BastardGhost>().deallocate(*it,1);
+#else
+		_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+		using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+		alloc_traits::destroy(alloc, *it);
+		alloc_traits::deallocate(alloc, *it, 1);
+#endif
 		*it = NULL;
 	}
 	
@@ -1238,8 +1266,15 @@ void MRAG_BBInfoCreator<WaveletsType, BlockType>::_resolveBastardGhosts(
 	{
 		for(typename GhostMap::iterator itM = itV->begin(); itM!=itV->end(); itM++)
 		{
+#if TBB_OLD_VERSION
 			allocator<BastardGhost>().destroy(itM->second);
 			allocator<BastardGhost>().deallocate(itM->second,1);
+#else
+			_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+			using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+			alloc_traits::destroy(alloc, itM->second);
+			alloc_traits::deallocate(alloc, itM->second, 1);
+#endif
 			
 			itM->second = NULL;
 		}

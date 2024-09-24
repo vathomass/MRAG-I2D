@@ -121,8 +121,15 @@ class MRAG_BBInfoCreator
 			
 			const int request_block_level = block_level + (bAnalysis?+1:-1);
 			
+#if TBB_OLD_VERSION
 			matRequests = allocator<MatrixOfRequests>().allocate(1);
 			allocator<MatrixOfRequests>().construct(matRequests,  MatrixOfRequests());
+#else
+			_MRAG_GHOSTSCREATION_ALLOCATOR<MatrixOfRequests> alloc = allocator<MatrixOfRequests>();
+			using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<MatrixOfRequests>>;
+			matRequests = alloc_traits::allocate(alloc, 1);
+			alloc_traits::construct(alloc, matRequests, MatrixOfRequests());
+#endif		
 			matRequests->_Setup(e[0]-s[0], e[1]-s[1], e[2]-s[2]);
 			
 			*matRequests = NULL;
@@ -171,8 +178,15 @@ class MRAG_BBInfoCreator
 					request = it->second;
 				else
 				{
+#if TBB_OLD_VERSION
 					request = allocator<BastardGhost>().allocate(1);
 					allocator<BastardGhost>().construct(request, BastardGhost(request_block_level, i));
+#else
+					_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost> alloc = allocator<BastardGhost>();
+					using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<BastardGhost>>;
+					request = alloc_traits::allocate(alloc, 1);
+					alloc_traits::construct(alloc, request, BastardGhost(request_block_level, i));
+#endif
 					
 					newFront.push_back(request);
 					buffer[request_block_level - minLevel][key] = request;
@@ -278,8 +292,15 @@ class MRAG_BBInfoCreator
 		{	
 			if (matRequests!=NULL)
 			{
+#if TBB_OLD_VERSION
 				allocator<MatrixOfRequests>().destroy(matRequests);
 				allocator<MatrixOfRequests>().deallocate(matRequests,1);
+#else
+				_MRAG_GHOSTSCREATION_ALLOCATOR<MatrixOfRequests> alloc = allocator<MatrixOfRequests>();
+				using alloc_traits = std::allocator_traits<_MRAG_GHOSTSCREATION_ALLOCATOR<MatrixOfRequests>>;
+				alloc_traits::destroy(alloc, matRequests);
+				alloc_traits::deallocate(alloc, matRequests, 1);
+#endif
 			}
 			
 			if (vWeights[0] != NULL) allocator<double>().deallocate(vWeights[0], nWeightSize[0]);

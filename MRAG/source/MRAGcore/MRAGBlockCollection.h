@@ -107,20 +107,37 @@ protected:
 	
 	virtual BlockType * _allocate(int nElements) const
 	{
+#ifdef TBB_OLD_VERSION
 		BlockType * ptr = allocator.allocate(nElements);
 		
 		for(int i=0; i<nElements; i++)
 			allocator.construct(ptr+i, BlockType_());
-		
+#else
+		using alloc_traits = std::allocator_traits<_MRAG_BLOCKCOLLECTION_ALLOCATOR<BlockType_>>;
+		BlockType * ptr = alloc_traits::allocate(allocator, nElements);
+
+		for(int i=0; i<nElements; i++)
+			alloc_traits::construct(allocator, ptr + i, BlockType_());
+
+#endif
 		return ptr;
 	}
 	
 	virtual void _deallocate(BlockType * ptr, int nElements) const
 	{
+#ifdef TBB_OLD_VERSION
 		for(int i=0; i<nElements; i++)
 			allocator.destroy(ptr+i);
 		
 		allocator.deallocate(ptr, nElements);
+#else
+		using alloc_traits = std::allocator_traits<_MRAG_BLOCKCOLLECTION_ALLOCATOR<BlockType_>>;
+		
+		for(int i=0; i<nElements; i++)
+			alloc_traits::destroy(allocator, ptr + i);
+		
+		alloc_traits::deallocate(allocator, ptr, nElements);
+#endif
 	}
 	
 	static int _createIDs(int n=1);

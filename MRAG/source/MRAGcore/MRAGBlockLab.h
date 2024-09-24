@@ -57,8 +57,15 @@ protected:
 	{ 
 		if (t != NULL)
 		{
+#if TBB_OLD_VERSION
 			allocator<T>().destroy(t);
-			allocator<T>().deallocate(t,1); 
+			allocator<T>().deallocate(t,1);
+#else
+			_MRAG_BLOCKLAB_ALLOCATOR<T> alloc = allocator<T>();
+			using alloc_traits = std::allocator_traits<_MRAG_BLOCKLAB_ALLOCATOR<T>>;
+			alloc_traits::destroy(alloc, t);
+			alloc_traits::deallocate(alloc, t, 1);
+#endif
 		}
 		t = NULL; 
 	}
@@ -67,8 +74,15 @@ protected:
 	void _release_vector(T *& t, int n)
 	{ 
 		if (t != NULL)
+		{
+#if TBB_OLD_VERSION
 			allocator<T>().deallocate(t, n); 
-		
+#else
+			_MRAG_BLOCKLAB_ALLOCATOR<T> alloc = allocator<T>();
+			using alloc_traits = std::allocator_traits<_MRAG_BLOCKLAB_ALLOCATOR<T>>;
+			alloc_traits::deallocate(alloc, t, n);
+#endif
+		}
 		t = NULL; 
 	}
 	
@@ -134,9 +148,16 @@ public:
 			if (m_cacheBlock != NULL)
 				_release(m_cacheBlock);
 
+#if TBB_OLD_VERSION
 			m_cacheBlock = allocator< Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> >().allocate(1);
 			
 			allocator< Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> >().construct(m_cacheBlock, Matrix3D<ElementType,  true, _MRAG_BLOCKLAB_ALLOCATOR> ());
+#else
+			_MRAG_BLOCKLAB_ALLOCATOR<Matrix3D<ElementType, true, _MRAG_BLOCKLAB_ALLOCATOR>> alloc = allocator<Matrix3D<ElementType, true, _MRAG_BLOCKLAB_ALLOCATOR>>();			
+			using alloc_traits = std::allocator_traits<_MRAG_BLOCKLAB_ALLOCATOR<Matrix3D<ElementType, true, _MRAG_BLOCKLAB_ALLOCATOR>>>;
+			m_cacheBlock = alloc_traits::allocate(alloc, 1);
+			alloc_traits::construct(alloc, m_cacheBlock, Matrix3D<ElementType, true, _MRAG_BLOCKLAB_ALLOCATOR>());
+#endif
 			
 			m_cacheBlock->_Setup(BlockType::sizeX + m_stencilEnd[0] - m_stencilStart[0] -1,
 								 BlockType::sizeY + m_stencilEnd[1] - m_stencilStart[1] -1,
