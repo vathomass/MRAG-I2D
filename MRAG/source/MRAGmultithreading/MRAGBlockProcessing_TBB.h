@@ -13,7 +13,11 @@
 //#define TBB_DO_THREADING_TOOLS 1
 #include "tbb/blocked_range.h"
 #include "tbb/parallel_for.h"
+#ifdef TBB_OLD_VERSION
 #include "tbb/pipeline.h"
+#else
+#include "tbb/parallel_pipeline.h"
+#endif
 #include "tbb/concurrent_queue.h"
 
 #include "MRAGcore/MRAGEnvironment.h"
@@ -339,7 +343,11 @@ namespace MRAG
 			};
 			
 			template<typename Processing>
+#ifdef TBB_OLD_VERSION
 			class Filter_PickABlock: public tbb::filter
+#else
+			class Filter_PickABlock
+#endif
 			{				
 				Token<Processing> tokens[nSlots];
 				const BlockInfo * ptrCurrentInfo;
@@ -350,7 +358,9 @@ namespace MRAG
 				concurrent_bounded_queue<int> availableSlots;
 				
 				Filter_PickABlock(LabType<BlockType>* labSlots,  const BlockInfo* vInfo, const int nBlocks, Processing& p):
-					filter(false),	
+#ifdef TBB_OLD_VERSION
+					filter(false),
+#endif
 					ptrCurrentInfo(vInfo),
 					availableSlots(), availableBlocks()
 				{
@@ -375,8 +385,14 @@ namespace MRAG
 						tokens[i].lab = NULL;
 					}
 				}
-				
+
+#ifdef TBB_OLD_VERSION
 				void* operator()(void *)
+#else
+				// NOTE: operator should be const but this conflicts with queues ...
+				// Maybe there is a better solution
+				Token<Processing>* operator()()
+#endif
 				{
 					int iBlock = -1;
 					//if( !availableBlocks.pop_if_present(iBlock) ) return NULL;
@@ -397,12 +413,17 @@ namespace MRAG
 				}
 			private:
 				//forbidden
+#ifdef TBB_OLD_VERSION
 				Filter_PickABlock(const Filter_PickABlock& p):filter(false),ptrCurrentInfo(NULL),availableSlots(), availableBlocks()
+#else
+				Filter_PickABlock(const Filter_PickABlock& p):ptrCurrentInfo(NULL), availableSlots(), availableBlocks()
+#endif
 				{abort();}
 				
 				Filter_PickABlock& operator=(const Filter_PickABlock& p){abort(); return *this;}
 			};
-			
+
+#ifdef TBB_OLD_VERSION			
 			template<typename Processing>
 			class Filter_Process: public tbb::filter
 			{
@@ -437,6 +458,35 @@ namespace MRAG
 					return NULL; 
 				}
 			};
+#else
+			template<typename Processing>
+			class Filter_Process
+			{
+			public:
+				Filter_Process() {}
+
+				Token<Processing>* operator()(Token<Processing>* token) const
+				{
+					token->process();
+					return token;
+				}
+			};
+
+			template<typename Processing>
+			class Filter_Release
+			{
+				concurrent_bounded_queue<int>& availableSlots;
+			public:
+				Filter_Release(Filter_PickABlock<Processing>& pickAblock) 
+				:availableSlots(pickAblock.availableSlots)
+				{}
+				
+				void operator()(Token<Processing> * token) const
+				{	
+					availableSlots.push(token->slotID);
+				}
+			};
+#endif
 			
 		public:
 			BlockProcessing_Pipeline_TBB(): BlockProcessing_TBB<BlockType>(){}
@@ -500,16 +550,29 @@ namespace MRAG
 				Filter_Release<Processing> filter3(filter1);
 				
 				//3.
+#ifdef TBB_OLD_VERSION
 				pipeline mypipeline;
 				mypipeline.add_filter(filter1);
 				mypipeline.add_filter(filter2);
 				mypipeline.add_filter(filter3);
-				
+#else
+				filter<void, Token<Processing>*> flt1(filter_mode::parallel, filter1);
+				filter<Token<Processing>*, Token<Processing>*> flt2(filter_mode::parallel, filter2);
+				filter<Token<Processing>*, void> flt3(filter_mode::parallel, filter3);
+				filter<void, void> allfilter = flt1 & flt2 & flt3;
+#endif
+
 				//4.
+#ifdef TBB_OLD_VERSION
 				mypipeline.run(nSlots);
-				
+#else
+				parallel_pipeline(nSlots, allfilter);
+#endif
+
 				//5.
+#ifdef TBB_OLD_VERSION
 				mypipeline.clear();
+#endif
 				_releaseBlockPointers(vInfo, c);
 			}
 		}; /* BlockProcessing_Pipeline_TBB */
