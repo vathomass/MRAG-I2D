@@ -45,7 +45,9 @@ namespace MRAG
 
 #ifdef _MRAG_TBB
 #include <stdio.h>
+#ifdef TBB_OLD_VERSION
 #include <tbb/task_scheduler_init.h>
+#endif
 #endif
 #pragma once
 namespace MRAG
@@ -59,6 +61,7 @@ namespace MRAG
 		inline void setup(int threads=-1)
 		{
 #ifdef _MRAG_TBB
+#ifdef TBB_OLD_VERSION
 			static tbb::task_scheduler_init * init = NULL;
 			
 			if (init == NULL)
@@ -67,6 +70,7 @@ namespace MRAG
 				init = new tbb::task_scheduler_init(nthreads);
 				printf("INITIALIZED THREADS=%d (_MRAG_TBB_NTHREADS_HINT is %d)\n", nthreads, _MRAG_TBB_NTHREADS_HINT);
 			}
+#endif
 #endif
 
 		}
