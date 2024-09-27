@@ -20,7 +20,9 @@ extern  double _THETA;
 #include <tbb/parallel_for.h>
 #include <tbb/parallel_reduce.h>
 #include <tbb/parallel_sort.h>
+#ifdef TBB_OLD_VERSION
 #include <tbb/task_scheduler_init.h>
+#endif
 #include <tbb/tick_count.h>
 
 #include "I2D_Headers.h"
