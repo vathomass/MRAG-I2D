@@ -332,23 +332,23 @@ VPATH := ../source/ ../source/mani-fmm2d/ ../source/mattia-RL/ ../source/potenti
 
 
 if2d-tests: $(TESTOBJS)
-	$(CC)  $^ $(LIBS) -o $@
+	$(CC) $^ $(LIBS) -o $@
 	@echo done
 
 avemaria: $(NOMINEPATRIS_OBJS)
-	$(CC)  $^ $(LIBS) -o $@
+	$(CC) $^ $(LIBS) -o $@
 	@echo done
 
 chloe: $(CHLOE_OBJS)
-	$(CC) $(LIBS) $^ -o $@
+	$(CC) $^ $(LIBS) -o $@
 	@echo done
 
 alexia: $(ALEXIA_OBJS)
-	$(CC) $(LIBS) $^ -o $@
+	$(CC) $^ $(LIBS) -o $@
 	@echo done
 
 rl: $(RL_OBJS)
-	$(CC) $(LIBS) $^ -o $@
+	$(CC) $^ $(LIBS) -o $@
 	@echo done
 
 #I2D_CoreFMM_AggressiveVel.o: I2D_CoreFMM_AggressiveVel.cpp
